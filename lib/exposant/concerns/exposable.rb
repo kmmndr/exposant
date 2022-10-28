@@ -1,5 +1,5 @@
 module Exposant
-  module Presentable
+  module Exposable
     module Model
       extend ActiveSupport::Concern
 
@@ -9,7 +9,7 @@ module Exposant
 
       module ClassMethods
         def exhibitor(obj, variant = nil)
-          obj.extend(Presentable::Collection)
+          obj.extend(Exposable::Collection)
           obj.model_klass = self
 
           obj.exhibitor(variant)

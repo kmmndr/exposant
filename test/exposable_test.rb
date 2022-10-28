@@ -1,8 +1,8 @@
 require 'test_helper'
 
-class PresentableTest < Minitest::Test
+class ExposableTest < Minitest::Test
   class Foo
-    include Exposant::Presentable::Model
+    include Exposant::Exposable::Model
   end
 
   class FooExhibitor < Exposant::ModelExhibitor; end
