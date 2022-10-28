@@ -1,8 +1,10 @@
 # Exposant
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/exposant`. To experiment with that code, run `bin/console` for an interactive prompt.
+In a Rails application, it is often required to fill a gap between Models and
+Views. There are of course, many differents ways to fill this gap, one of these
+is exhibitors (or improved decorators).
 
-TODO: Delete this and the text above, and describe your gem
+This gem provide an easy way to create Ruby exhibitors or decorators.
 
 ## Installation
 
@@ -22,7 +24,55 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+There are two kinds of exhibitors refering to model or collection.
+
+A collection exhibitor is meant to encapsulate an enumerable object (like
+ActiveRecord Relation or just Array). It overrides `each` method to ensure
+encapsulation of resulting objects.
+
+A model exhibitor improve it's associated object, like adding non-database
+related methods to an ActiveRecord object for example.
+
+To use this gem in a Rails application, create a folder `app/exhibitors`.
+Create pluralized exhibitors for collections and singularized exhibitors for
+models.
+
+### Example:
+
+Consider having a User model with `first_name` and `last_name`
+
+```ruby
+# app/models/application_record.rb
+class ApplicationRecord < ActiveRecord::Base
+  include Exposant::Exposable
+end
+
+# app/exhibitors/user_exhibitor.rb
+class UserExhibitor < Exposant::ModelExhibitor
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+end
+
+# app/exhibitors/users_exhibitor.rb
+class UsersExhibitor < Exposant::CollectionExhibitor
+  # You can add methods for collections too if necessary
+end
+```
+
+Then you may want to use your brand new exhibitor in your controller
+```ruby
+# app/controllers/users_controller.rb
+class UsersController < DefaultController
+  def index
+    @users = User.exhibitor(User.all)
+  end
+
+  def show
+    @user = User.find(...).exhibitor
+  end
+end
+```
 
 ## Development
 
