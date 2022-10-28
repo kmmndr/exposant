@@ -43,4 +43,17 @@ class ExposableTest < Minitest::Test
     assert_equal FooExhibitor, FoosExhibitor.new(foos).first.class
     assert_equal FooBarExhibitor, FoosBarExhibitor.new(foos).first.class
   end
+
+  def test_exhibitor_context
+    foo_exhibitor = Foo.new.exhibitor
+    refute foo_exhibitor.contextualized?
+    foo_exhibitor.contextualize(123)
+    assert foo_exhibitor.contextualized?
+
+    foos = [Foo.new]
+    foos_exhibitor = Foo.exhibitor(foos)
+    refute foos_exhibitor.contextualized?
+    foos_exhibitor.contextualize({ a: 1 })
+    assert foos_exhibitor.contextualized?
+  end
 end
