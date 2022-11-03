@@ -1,6 +1,7 @@
 module Exposant
   class ModelExhibitor < SimpleDelegator
     include Exhibitor
+    include Exposant::Contextualizable
     extend ActiveModel::Naming
 
     def to_model

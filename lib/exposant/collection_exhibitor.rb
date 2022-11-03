@@ -1,6 +1,7 @@
 module Exposant
   class CollectionExhibitor < SimpleDelegator
     include Exhibitor
+    include Exposant::Contextualizable
     extend ActiveModel::Naming
     include Enumerable
 

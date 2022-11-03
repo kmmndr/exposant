@@ -4,6 +4,7 @@ require 'delegate'
 require 'active_support'
 require 'active_model'
 
+require_relative 'exposant/concerns/contextualizable'
 require_relative 'exposant/concerns/exhibitor'
 require_relative 'exposant/concerns/exposable'
 require_relative 'exposant/collection_exhibitor'

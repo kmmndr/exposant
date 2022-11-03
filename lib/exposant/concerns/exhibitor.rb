@@ -1,6 +1,5 @@
 module Exhibitor
   extend ActiveSupport::Concern
-  attr_accessor :context
 
   def obj
     __getobj__
@@ -10,16 +9,7 @@ module Exhibitor
     self.class.exhibitor_for(obj)
   end
 
-  def contextualize(context)
-    self.context = context
-  end
-
-  def contextualized?
-    context.present?
-  end
-
   module ClassMethods
-
     def exhibitor_for_super(method, klass = nil)
       define_method(method) do |*args|
         klass ||= self.class
