@@ -12,8 +12,9 @@ module Exposant
       return enum_for(:each) unless block_given?
 
       __getobj__.each do |o|
-        exh = o.exhibitor(self.class.exhibitor_variant)
-        exh.contextualize(context) if contextualized?
+        exh = o&.exhibitor(self.class.exhibitor_variant)
+        exh.contextualize(context) if exh.present? && contextualized?
+
         yield exh
       end
     end
