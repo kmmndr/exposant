@@ -1,19 +1,36 @@
 module Exposant
-  class ModelExhibitor < SimpleDelegator
-    include Exhibitor
+  class Base < SimpleDelegator
     include Exposant::Contextualizable
     extend ActiveModel::Naming
 
+    def initialize(*)
+      super
+
+      extend(Exposant::Collection) if __getobj__.is_a?(Enumerable)
+    end
+
     def to_model
-      obj
+      __getobj__
+    end
+
+    def self.respond_to_missing?(name, *)
+      klass.respond_to?(name) || super
+    end
+
+    def self.method_missing(name, *args, &block)
+      klass.send(name, *args, &block)
     end
 
     def self.human_attribute_name(*args)
       exhibited_class.human_attribute_name(*args)
     end
 
+    def self.klass
+      @klass ||= exhibited_class
+    end
+
     def self.exhibited_class
-      return ancestors[1].exhibited_class unless ancestors[1] == ModelExhibitor
+      return ancestors[1].exhibited_class unless ancestors[1] == Exposant::Base
 
       name.gsub(/Exhibitor$/, '').constantize
     end
@@ -27,7 +44,7 @@ module Exposant
     end
 
     def self.parent_exhibitor
-      return ancestors[1].parent_exhibitor unless ancestors[1] == ModelExhibitor
+      return ancestors[1].parent_exhibitor unless ancestors[1] == Exposant::Base
 
       name.constantize
     end
