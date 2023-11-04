@@ -2,9 +2,14 @@
 
 In a Rails application, it is often required to fill a gap between Models and
 Views. There are of course, many differents ways to fill this gap, one of these
-is exhibitors (or improved decorators).
+is decorators and its variants exhibits or presenters.
 
-This gem provide an easy way to create Ruby exhibitors or decorators.
+The main difference between decorators, exhibits and presenters are their
+proximity with the rendering layer. Typically a decorator is not meant to be
+contextualized, whereas an exhibit is intended to have access to rendering
+context.
+
+This gem provide an easy way to create theese concepts in Ruby.
 
 ## Installation
 
@@ -16,74 +21,90 @@ gem 'exposant'
 
 And then execute:
 
-    $ bundle install
+```ruby
+$ bundle install
+```
 
 Or install it yourself as:
 
-    $ gem install exposant
+```
+$ gem install exposant
+```
 
 ## Usage
 
-There are two kinds of exhibitors refering to model or collection.
+Exposant objects are intended to overload class (scopes) and instance methods
+of any other object. The default type is exposant, choosing between decorator,
+exhibit or any other type name is up to you. There is no magic involved for the
+context, you just have to call contextualize and provide the required context.
 
-A collection exhibitor is meant to encapsulate an enumerable object (like
-ActiveRecord Relation or just Array). It overrides `each` method to ensure
-encapsulation of resulting objects.
-
-A model exhibitor improve it's associated object, like adding non-database
-related methods to an ActiveRecord object for example.
-
-To use this gem in a Rails application, create a folder `app/exhibitors`.
-Create pluralized exhibitors for collections and singularized exhibitors for
-models.
-
-### Example:
+### Basic example
 
 Consider having a User model with `first_name` and `last_name`
 
 ```ruby
-# app/models/application_record.rb
-class ApplicationRecord < ActiveRecord::Base
-  include Exposant::Exposable
+# app/models/user.rb
+class User < ActiveRecord::Base
+  include Exposant::Model
+  has_exposant type: :decorator
 end
 
-# app/exhibitors/user_exhibitor.rb
-class UserExhibitor < Exposant::ModelExhibitor
+# app/decorators/user_decorator.rb
+class UserDecorator < Exposant::Base
+  exposant_type :decorator
+
   def full_name
     "#{first_name} #{last_name}"
   end
 end
-
-# app/exhibitors/users_exhibitor.rb
-class UsersExhibitor < Exposant::CollectionExhibitor
-  # You can add methods for collections too if necessary
-end
 ```
 
-Then you may want to use your brand new exhibitor in your controller
+Then you may want to use your brand new decorator in your controller
+
 ```ruby
 # app/controllers/users_controller.rb
 class UsersController < DefaultController
   def index
-    @users = User.exhibitor(User.all)
+    @users = User.decorator(User.all)
   end
 
   def show
-    @user = User.find(...).exhibitor
+    @user = User.find(...).decorator
+  end
+end
+```
+
+### Contextualization example
+
+If you want to contextualize a presenter, for example in a Rails application.
+
+```ruby
+# app/controllers/users_controller.rb
+class UsersController < DefaultController
+  def index
+    @users = User.presenter(User.all)
+    @users.contextualize(self)
+  end
+
+  def show
+    @user = User.find(...).presenter
+    @user.contextualize(self)
   end
 end
 ```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bin/setup` to install dependencies. You can
+also run `bin/console` for an interactive prompt that will allow you to
+experiment.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/kmmndr/exposant.
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/kmmndr/exposant.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the
+[MIT License](https://opensource.org/licenses/MIT).
