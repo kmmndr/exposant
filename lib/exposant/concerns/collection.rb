@@ -5,7 +5,7 @@ module Exposant
     def each
       return enum_for(:each) unless block_given?
 
-      super { |o| yield o.exhibitor(self.class.exhibitor_variant) }
+      super { |o| yield o.exposant(self.class.exposant_variant) }
     end
   end
 end

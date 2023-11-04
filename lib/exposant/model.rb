@@ -3,50 +3,50 @@ module Exposant
   module Model
     extend ActiveSupport::Concern
 
-    def exhibitor(variant = nil, type = nil)
-      self.class.exhibitor_class(variant, type).new(self)
+    def exposant(variant = nil, type = nil)
+      self.class.exposant_class(variant, type).new(self)
     end
 
     module ClassMethods
-      def has_exhibitor(name: nil, type: nil)
-        @exhibitor_class = name
-        @exhibitor_type = type
+      def has_exposant(name: nil, type: nil)
+        @exposant_class = name
+        @exposant_type = type
 
-        if type.present? && type != 'Exhibitor'
+        if type.present? && type != 'Exposant'
           define_method type.parameterize do |variant = nil|
-            exhibitor(variant, type)
+            exposant(variant, type)
           end
 
           define_singleton_method type.parameterize do |obj, variant = nil|
-            exhibitor(obj, variant, type)
+            exposant(obj, variant, type)
           end
         end
       end
 
-      def exhibitor_type
-        @exhibitor_type || 'Exhibitor'
+      def exposant_type
+        @exposant_type || 'Exposant'
       end
 
-      def exhibitor(obj, variant = nil, type = nil)
-        obj.extend(ExhibitorMethods)
+      def exposant(obj, variant = nil, type = nil)
+        obj.extend(ExposantMethods)
         obj.model_klass = self
 
-        if type.present? && type != 'Exhibitor'
+        if type.present? && type != 'Exposant'
           obj.singleton_class.class_eval do
             define_method type.parameterize do |var = nil|
-              exhibitor(var, type)
+              exposant(var, type)
             end
           end
         end
 
-        obj.exhibitor(variant, type)
+        obj.exposant(variant, type)
       end
 
-      def exhibitor_class(variant = nil, type = nil)
-        klass = if @exhibitor_class.present?
-                  @exhibitor_class
+      def exposant_class(variant = nil, type = nil)
+        klass = if @exposant_class.present?
+                  @exposant_class
                 else
-                  name.dup.concat(type || exhibitor_type)
+                  name.dup.concat(type || exposant_type)
                 end
 
         klass = klass
@@ -54,22 +54,22 @@ module Exposant
                 .tap { |arr| arr.last.prepend(variant&.to_s&.downcase&.capitalize || '') }
                 .join('::')
 
-        raise "Missing exhibitor #{klass}" unless const_defined?(klass)
+        raise "Missing exposant #{klass}" unless const_defined?(klass)
 
         klass.constantize
       end
     end
   end
 
-  module ExhibitorMethods
+  module ExposantMethods
     attr_accessor :model_klass
 
-    def exhibitor(variant = nil, type = nil)
-      exhibitor_class(variant, type).new(self)
+    def exposant(variant = nil, type = nil)
+      exposant_class(variant, type).new(self)
     end
 
-    def exhibitor_class(variant = nil, type = nil)
-      model_klass.exhibitor_class(variant, type)
+    def exposant_class(variant = nil, type = nil)
+      model_klass.exposant_class(variant, type)
     end
   end
 end

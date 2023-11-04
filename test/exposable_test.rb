@@ -21,7 +21,7 @@ class ExposableTest < Minitest::Test
     end
   end
 
-  class FooExhibitor < Exposant::Base
+  class FooExposant < Exposant::Base
     def self.klass_method
       super + 2
     end
@@ -35,11 +35,11 @@ class ExposableTest < Minitest::Test
     end
   end
 
-  class BarFooExhibitor < FooExhibitor; end
+  class BarFooExposant < FooExposant; end
 
   class Foofoo
     include Exposant::Model
-    has_exhibitor type: 'Ex'
+    has_exposant type: 'Ex'
 
     def baz
       1
@@ -47,7 +47,7 @@ class ExposableTest < Minitest::Test
   end
 
   class FoofooEx < Exposant::Base
-    exhibitor_type 'Ex'
+    exposant_type 'Ex'
 
     def baz
       super + 2
@@ -58,31 +58,31 @@ class ExposableTest < Minitest::Test
 
   class Baz
     include Exposant::Model
-    has_exhibitor type: 'Presenter'
-    has_exhibitor type: 'Decorator'
+    has_exposant type: 'Presenter'
+    has_exposant type: 'Decorator'
   end
 
   class BazDecorator < Exposant::Base
-    exhibitor_type 'Decorator'
+    exposant_type 'Decorator'
   end
 
   class BasePresenter < Exposant::Base
     exposant_base
-    exhibitor_type 'Presenter'
+    exposant_type 'Presenter'
   end
 
   class BazPresenter < BasePresenter
   end
 
-  def test_exhibitor_custom_type_accessor
+  def test_exposant_custom_type_accessor
     assert_equal BazPresenter, Baz.new.presenter.class
-    assert_nil Baz.new.presenter.class.exhibitor_variant
+    assert_nil Baz.new.presenter.class.exposant_variant
 
     assert_equal BazDecorator, Baz.new.decorator.class
-    assert_nil Baz.new.decorator.class.exhibitor_variant
+    assert_nil Baz.new.decorator.class.exposant_variant
   end
 
-  def test_collection_exhibitor_custom_type_class
+  def test_collection_exposant_custom_type_class
     foos = []
     Baz.presenter(foos)
     Baz.decorator(foos)
@@ -91,165 +91,165 @@ class ExposableTest < Minitest::Test
     assert_equal BazDecorator, foos.decorator.class
   end
 
-  def test_instance_exhibitor_class
-    assert_equal FooExhibitor, Foo.new.exhibitor.class
-    assert_equal FoofooEx, Foofoo.new.exhibitor.class
+  def test_instance_exposant_class
+    assert_equal FooExposant, Foo.new.exposant.class
+    assert_equal FoofooEx, Foofoo.new.exposant.class
   end
 
-  def test_instance_exhibitor_variant
-    assert_equal BarFooExhibitor, Foo.new.exhibitor(:bar).class
-    assert_equal BarFoofooEx, Foofoo.new.exhibitor(:bar).class
+  def test_instance_exposant_variant
+    assert_equal BarFooExposant, Foo.new.exposant(:bar).class
+    assert_equal BarFoofooEx, Foofoo.new.exposant(:bar).class
   end
 
   def test_class_variant_name
-    assert_nil Foo.new.exhibitor.class.exhibitor_variant
-    assert_nil Foofoo.new.exhibitor.class.exhibitor_variant
+    assert_nil Foo.new.exposant.class.exposant_variant
+    assert_nil Foofoo.new.exposant.class.exposant_variant
   end
 
   def test_variant_class_variant_name
-    assert_equal :bar, Foo.new.exhibitor(:bar).class.exhibitor_variant
-    assert_equal :bar, Foofoo.new.exhibitor(:bar).class.exhibitor_variant
+    assert_equal :bar, Foo.new.exposant(:bar).class.exposant_variant
+    assert_equal :bar, Foofoo.new.exposant(:bar).class.exposant_variant
   end
 
-  def test_exhibited_class
-    assert_equal Foo, Foo.new.exhibitor.class.exhibited_class
-    assert_equal Foofoo, Foofoo.new.exhibitor.class.exhibited_class
+  def test_exposed_class
+    assert_equal Foo, Foo.new.exposant.class.exposed_class
+    assert_equal Foofoo, Foofoo.new.exposant.class.exposed_class
   end
 
-  def test_variant_exhibited_class
-    assert_equal Foo, Foo.new.exhibitor(:bar).class.exhibited_class
-    assert_equal Foofoo, Foofoo.new.exhibitor(:bar).class.exhibited_class
+  def test_variant_exposed_class
+    assert_equal Foo, Foo.new.exposant(:bar).class.exposed_class
+    assert_equal Foofoo, Foofoo.new.exposant(:bar).class.exposed_class
   end
 
-  def test_exhibitor_class
-    assert_equal FooExhibitor, Foo.new.exhibitor.exhibitor.class
+  def test_exposant_class
+    assert_equal FooExposant, Foo.new.exposant.exposant.class
   end
 
-  def test_default_exhibitor_type
-    assert_equal 'Exhibitor', Foo.new.exhibitor.class.exhibitor_type
+  def test_default_exposant_type
+    assert_equal 'Exposant', Foo.new.exposant.class.exposant_type
   end
 
-  def test_custom_type_exhibitor_type
-    assert_equal 'Ex', Foofoo.new.exhibitor.class.exhibitor_type
+  def test_custom_type_exposant_type
+    assert_equal 'Ex', Foofoo.new.exposant.class.exposant_type
   end
 
-  def test_custom_type_exhibitor_class
-    assert_equal FoofooEx, Foofoo.new.exhibitor.exhibitor.class
+  def test_custom_type_exposant_class
+    assert_equal FoofooEx, Foofoo.new.exposant.exposant.class
   end
 
   def test_overloaded_instance_methods
     assert Foo.new.respond_to?(:baz)
     assert_equal 2, Foo.new.baz
-    assert Foo.new.exhibitor.respond_to?(:baz)
-    assert_equal 6, Foo.new.exhibitor.baz
+    assert Foo.new.exposant.respond_to?(:baz)
+    assert_equal 6, Foo.new.exposant.baz
   end
 
   def test_non_overloaded_instance_methods
     assert Foo.new.respond_to?(:original_method)
     assert_equal 3, Foo.new.original_method
-    assert Foo.new.exhibitor.respond_to?(:original_method)
-    assert_equal 3, Foo.new.exhibitor.original_method
+    assert Foo.new.exposant.respond_to?(:original_method)
+    assert_equal 3, Foo.new.exposant.original_method
   end
 
   def test_custom_type_instance_methods
     assert Foofoo.new.respond_to?(:baz)
     assert_equal 1, Foofoo.new.baz
-    assert Foofoo.new.exhibitor.respond_to?(:baz)
-    assert_equal 3, Foofoo.new.exhibitor.baz
+    assert Foofoo.new.exposant.respond_to?(:baz)
+    assert_equal 3, Foofoo.new.exposant.baz
   end
 
-  def test_extending_collection_exhibitor
+  def test_extending_collection_exposant
     foos = []
 
-    refute foos.respond_to? :exhibitor
-    Foo.exhibitor(foos)
+    refute foos.respond_to? :exposant
+    Foo.exposant(foos)
 
-    assert foos.respond_to? :exhibitor
-    refute [].respond_to? :exhibitor
+    assert foos.respond_to? :exposant
+    refute [].respond_to? :exposant
   end
 
-  def test_collection_exhibitor_class
+  def test_collection_exposant_class
     foos = []
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal FooExhibitor, foos.exhibitor.class
+    assert_equal FooExposant, foos.exposant.class
   end
 
-  def test_collection_variant_exhibitor_class
+  def test_collection_variant_exposant_class
     foos = []
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal BarFooExhibitor, foos.exhibitor(:bar).class
+    assert_equal BarFooExposant, foos.exposant(:bar).class
   end
 
-  def test_class_exhibitor_variant
-    assert_nil FooExhibitor.exhibitor_variant
+  def test_class_exposant_variant
+    assert_nil FooExposant.exposant_variant
   end
 
-  def test_class_exhibitor_variant_from_variant
-    assert_equal :bar, BarFooExhibitor.exhibitor_variant
+  def test_class_exposant_variant_from_variant
+    assert_equal :bar, BarFooExposant.exposant_variant
   end
 
-  def test_collection_element_exhibitor_class
+  def test_collection_element_exposant_class
     foos = [Foo.new, Foo.new]
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal FooExhibitor, foos.exhibitor.first.class
+    assert_equal FooExposant, foos.exposant.first.class
   end
 
-  def test_collection_element_variant_exhibitor_class
+  def test_collection_element_variant_exposant_class
     foos = [Foo.new, Foo.new]
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal BarFooExhibitor, foos.exhibitor(:bar).first.class
+    assert_equal BarFooExposant, foos.exposant(:bar).first.class
   end
 
-  def test_collection_element_exhibitor_class_instancied_from_exhibitor
+  def test_collection_element_exposant_class_instancied_from_exposant
     foos = [Foo.new, Foo.new]
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal FooExhibitor, FooExhibitor.new(foos).first.class
+    assert_equal FooExposant, FooExposant.new(foos).first.class
   end
 
-  def test_collection_element_variant_exhibitor_class_instancied_from_exhibitor
+  def test_collection_element_variant_exposant_class_instancied_from_exposant
     foos = [Foo.new, Foo.new]
-    Foo.exhibitor(foos)
+    Foo.exposant(foos)
 
-    assert_equal BarFooExhibitor, BarFooExhibitor.new(foos).first.class
+    assert_equal BarFooExposant, BarFooExposant.new(foos).first.class
   end
 
   def test_overloaded_class_methods
     assert_equal 1, Foo.klass_method
-    assert_equal 3, FooExhibitor.klass_method
+    assert_equal 3, FooExposant.klass_method
   end
 
   def test_non_overloaded_class_methods
     assert Foo.respond_to?(:original_klass_method)
     assert_equal 4, Foo.original_klass_method
-    assert_equal 4, FooExhibitor.original_klass_method
+    assert_equal 4, FooExposant.original_klass_method
   end
 
-  def test_exhibitor_only_class_method
+  def test_exposant_only_class_method
     refute Foo.respond_to?(:other_klass_method)
-    assert FooExhibitor.respond_to?(:other_klass_method)
-    assert_equal 8, FooExhibitor.other_klass_method
+    assert FooExposant.respond_to?(:other_klass_method)
+    assert_equal 8, FooExposant.other_klass_method
   end
 
-  def test_instance_exhibitor_context
-    foo_exhibitor = Foo.new.exhibitor
-    refute foo_exhibitor.contextualized?
-    foo_exhibitor.contextualize(123)
-    assert foo_exhibitor.contextualized?
-    assert_equal 123, foo_exhibitor.context
+  def test_instance_exposant_context
+    foo_exposant = Foo.new.exposant
+    refute foo_exposant.contextualized?
+    foo_exposant.contextualize(123)
+    assert foo_exposant.contextualized?
+    assert_equal 123, foo_exposant.context
   end
 
-  def test_collection_exhibitor_context
+  def test_collection_exposant_context
     foos = [Foo.new]
-    foos_exhibitor = Foo.exhibitor(foos)
+    foos_exposant = Foo.exposant(foos)
 
-    refute foos_exhibitor.contextualized?
-    foos_exhibitor.contextualize({ a: 1 })
-    assert foos_exhibitor.contextualized?
-    assert_equal ({ a: 1 }), foos_exhibitor.context
+    refute foos_exposant.contextualized?
+    foos_exposant.contextualize({ a: 1 })
+    assert foos_exposant.contextualized?
+    assert_equal ({ a: 1 }), foos_exposant.context
   end
 end

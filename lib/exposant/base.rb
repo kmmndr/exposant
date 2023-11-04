@@ -22,39 +22,39 @@ module Exposant
     end
 
     def self.human_attribute_name(*args)
-      exhibited_class.human_attribute_name(*args)
+      exposed_class.human_attribute_name(*args)
     end
 
     def self.klass
-      @klass ||= exhibited_class
+      @klass ||= exposed_class
     end
 
     def self.belongs_to_model(name)
-      exhibited_class(name)
+      exposed_class(name)
     end
 
-    def self.exhibited_class(value = nil)
-      @exhibited_class = value.constantize if value.present?
-      return @exhibited_class if @exhibited_class.present?
+    def self.exposed_class(value = nil)
+      @exposed_class = value.constantize if value.present?
+      return @exposed_class if @exposed_class.present?
 
-      return ancestors[1].exhibited_class unless ancestors[1] == Exposant::Base || ancestors[1].exposant_base?
+      return ancestors[1].exposed_class unless ancestors[1] == Exposant::Base || ancestors[1].exposant_base?
 
-      klass_name = name.gsub(/#{exhibitor_type}$/, '')
+      klass_name = name.gsub(/#{exposant_type}$/, '')
 
       klass_name.constantize
     end
 
-    def self.exhibitor_type(value = nil)
-      @exhibitor_type = value if value.present?
-      return @exhibitor_type if @exhibitor_type.present?
+    def self.exposant_type(value = nil)
+      @exposant_type = value if value.present?
+      return @exposant_type if @exposant_type.present?
 
-      return ancestors[1].exhibitor_type unless ancestors[1] == Exposant::Base
+      return ancestors[1].exposant_type unless ancestors[1] == Exposant::Base
 
-      'Exhibitor'
+      'Exposant'
     end
 
     def self.custom_type?
-      exhibitor_type != 'Exhibitor'
+      exposant_type != 'Exposant'
     end
 
     def self.exposant_base?
@@ -65,12 +65,12 @@ module Exposant
       @exposant_base = true
     end
 
-    def self.exhibitor_variant
-      exhibited_name = exhibited_class.name.demodulize
+    def self.exposant_variant
+      exposed_name = exposed_class.name.demodulize
 
       variant = name
                 .split('::')
-                .tap { |arr| arr.last.gsub!(/#{exhibited_name}#{exhibitor_type}$/, '') }
+                .tap { |arr| arr.last.gsub!(/#{exposed_name}#{exposant_type}$/, '') }
                 .last
                 .downcase
 
@@ -79,8 +79,8 @@ module Exposant
       variant.to_sym
     end
 
-    def self.parent_exhibitor
-      return ancestors[1].parent_exhibitor unless ancestors[1] == Exposant::Base
+    def self.parent_exposant
+      return ancestors[1].parent_exposant unless ancestors[1] == Exposant::Base
 
       name.constantize
     end
