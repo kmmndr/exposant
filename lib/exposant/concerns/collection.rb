@@ -5,7 +5,12 @@ module Exposant
     def each
       return enum_for(:each) unless block_given?
 
-      super { |o| yield o.exposant(self.class.exposant_variant) }
+      super do |obj|
+        exposant = obj.exposant(self.class.exposant_variant, self.class.exposant_type)
+        exposant.contextualize(context) if contextualized?
+
+        yield exposant
+      end
     end
   end
 end

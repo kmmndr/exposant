@@ -91,6 +91,15 @@ class ExposableTest < Minitest::Test
     assert_equal BazDecorator, foos.decorator.class
   end
 
+  def test_collection_custom_type_element_exposant_class
+    foos = [Baz.new, Baz.new]
+    Baz.presenter(foos)
+    Baz.decorator(foos)
+
+    assert_equal BazPresenter, foos.presenter.first.class
+    assert_equal BazDecorator, foos.decorator.first.class
+  end
+
   def test_instance_exposant_class
     assert_equal FooExposant, Foo.new.exposant.class
     assert_equal FoofooEx, Foofoo.new.exposant.class
@@ -251,5 +260,7 @@ class ExposableTest < Minitest::Test
     foos_exposant.contextualize({ a: 1 })
     assert foos_exposant.contextualized?
     assert_equal ({ a: 1 }), foos_exposant.context
+    assert foos_exposant.first.contextualized?
+    assert_equal ({ a: 1 }), foos_exposant.first.context
   end
 end
