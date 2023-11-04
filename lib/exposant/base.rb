@@ -39,7 +39,7 @@ module Exposant
 
       return ancestors[1].exposed_class unless ancestors[1] == Exposant::Base || ancestors[1].exposant_base?
 
-      klass_name = name.gsub(/#{exposant_type}$/, '')
+      klass_name = name.gsub(/#{type_name}$/, '')
 
       klass_name.constantize
     end
@@ -50,11 +50,15 @@ module Exposant
 
       return ancestors[1].exposant_type unless ancestors[1] == Exposant::Base
 
-      'Exposant'
+      :exposant
+    end
+
+    def self.type_name
+      exposant_type.to_s.camelcase
     end
 
     def self.custom_type?
-      exposant_type != 'Exposant'
+      exposant_type != :exposant
     end
 
     def self.exposant_base?
@@ -70,7 +74,7 @@ module Exposant
 
       variant = name
                 .split('::')
-                .tap { |arr| arr.last.gsub!(/#{exposed_name}#{exposant_type}$/, '') }
+                .tap { |arr| arr.last.gsub!(/#{exposed_name}#{type_name}$/, '') }
                 .last
                 .downcase
 

@@ -39,7 +39,7 @@ class ExposableTest < Minitest::Test
 
   class Foofoo
     include Exposant::Model
-    has_exposant type: 'Ex'
+    has_exposant type: :ex
 
     def baz
       1
@@ -47,7 +47,7 @@ class ExposableTest < Minitest::Test
   end
 
   class FoofooEx < Exposant::Base
-    exposant_type 'Ex'
+    exposant_type :ex
 
     def baz
       super + 2
@@ -58,17 +58,17 @@ class ExposableTest < Minitest::Test
 
   class Baz
     include Exposant::Model
-    has_exposant type: 'Presenter'
-    has_exposant type: 'Decorator'
+    has_exposant type: :presenter
+    has_exposant type: :decorator
   end
 
   class BazDecorator < Exposant::Base
-    exposant_type 'Decorator'
+    exposant_type :decorator
   end
 
   class BasePresenter < Exposant::Base
     exposant_base
-    exposant_type 'Presenter'
+    exposant_type :presenter
   end
 
   class BazPresenter < BasePresenter
@@ -126,11 +126,11 @@ class ExposableTest < Minitest::Test
   end
 
   def test_default_exposant_type
-    assert_equal 'Exposant', Foo.new.exposant.class.exposant_type
+    assert_equal :exposant, Foo.new.exposant.class.exposant_type
   end
 
   def test_custom_type_exposant_type
-    assert_equal 'Ex', Foofoo.new.exposant.class.exposant_type
+    assert_equal :ex, Foofoo.new.exposant.class.exposant_type
   end
 
   def test_custom_type_exposant_class
